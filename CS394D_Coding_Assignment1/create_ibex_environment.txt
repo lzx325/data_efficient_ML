@@ -1,0 +1,14 @@
+## Welcome to start your first coding assignment in the course CS394D!
+Step 1: create an conda environment
+conda create -n cs394d_ass1 python=3.6
+
+Step 2: activate your conda environment
+conda activate cs394d_ass1
+
+Step 3: install necessary dependencies. 
+conda install tensorflow-gpu==1.15
+pip install torch==1.3.0 torchvision==0.4.1 tqdm requests
+module load gcc/6.4.0
+
+Step 4: Now start training !
+CUDA_VISIBLE_DECIVES=0,1 bash scripts/DiffAugment-biggan-cifar10-0.05.sh
