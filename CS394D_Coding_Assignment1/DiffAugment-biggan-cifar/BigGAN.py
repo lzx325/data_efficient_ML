@@ -12,7 +12,6 @@ from torch.nn import Parameter as P
 
 import layers
 
-
 # Architectures for G
 # Attention is passed in in the format '32_64' to mean applying an attention
 # block at both resolution 32x32 and 64x64. Just '64' will apply at 64x64.
@@ -426,7 +425,6 @@ class Discriminator(nn.Module):
 
 # Parallelized G_D to minimize cross-gpu communication
 # Without this, Generator outputs would get all-gathered and then rebroadcast.
-
 
 class G_D(nn.Module):
     def __init__(self, G, D):

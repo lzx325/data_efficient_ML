@@ -3,7 +3,6 @@
     This code is an unofficial reimplementation of
     "Large-Scale GAN Training for High Fidelity Natural Image Synthesis,"
     by A. Brock, J. Donahue, and K. Simonyan (arXiv 1809.11096).
-
     Let's go.
 """
 
@@ -70,6 +69,7 @@ def run(config):
     D = model.Discriminator(**config).to(device)
 
     # If using EMA, prepare it
+    # EMA: Exponential Moving Average
     if config['ema']:
         print('Preparing EMA for G with decay of {}'.format(
             config['ema_decay']))
@@ -187,6 +187,7 @@ def run(config):
                 x, y = x.to(device).half(), y.to(device)
             else:
                 x, y = x.to(device), y.to(device)
+            
             metrics = train(x, y)
             train_log.log(itr=int(state_dict['itr']), **metrics)
 
