@@ -177,6 +177,9 @@ def run(config):
         acc_metrics = {}
         acc_itrs = 0
         for i, (x, y) in enumerate(pbar):
+            # x.shape: (D_batch_size, C, W, H)
+            # y.shape: (D_batch_size, C, W, H)
+
             # Make sure G and D are in training mode, just in case they got set to eval
             # For D, which typically doesn't have BN, this shouldn't matter much.
             G.train()

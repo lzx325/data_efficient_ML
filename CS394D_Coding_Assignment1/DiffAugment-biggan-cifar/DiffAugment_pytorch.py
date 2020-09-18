@@ -14,36 +14,41 @@ def DiffAugment(x, policy='', channels_first=True):
         x = x.contiguous()
     return x
 
-
-
-def augment_brightness(x):
-    # to do
-
-    return None
-
-
-def augment_saturation(x):
-    # to do
-    return None
-
-
-def augment_contrast(x):
-    # to do
-    return None
-
-
-def augment_translation(x, ratio=0.125):
-    # to do
-    return None
-
-
-def augment_cutout(x, ratio=0.5):
-    # to do
-    return None
+def random_jittering(x):
+    batch_size=x.shape[0]
+    scale=torch.rand(batch_size,3,1,1,device=x.device)*0.1+1 # randomly scale each channel of the image
+    shift=torch.rand(batch_size,3,1,1,device=x.device)*0.1 # add additional shift to each channel of the image
+    x=x*scale+shift
+    x=torch.clamp(x,0,1) # clamp the array value to [0,1]
+    return x
+def random_cutout(x):
+    cutout_size=5
+    n_cutout=3
+    batch_size,C,W,H=x.shape
+    
+    cutout=torch.ones_like(x,device=x.device)
+    
+    for i in range(batch_size):
+        x_pos=torch.randint(0,W-cutout_size,(n_cutout,),device=x.device) # select x coordinate of the top left corner of the cutout
+        y_pos=torch.randint(0,H-cutout_size,(n_cutout,),device=x.device) # select y coordinate of the top left corner of the cutout
+        for j in range(n_cutout):
+            cutout[i,:,x_pos[j]:(x_pos[j]+cutout_size),y_pos[j]:(y_pos[j]+cutout_size)]=0 
+    x=cutout*x # apply cutout
+    return x
+def random_translation(x):
+    size=3
+    batch_size,C,W,H=x.shape
+    x_pad=F.pad(x,[size,size,size,size,0,0,0,0]) # pad images on each side
+    x_new=torch.zeros_like(x,device=x.device)
+    for i in range(batch_size):
+        x_pos=torch.randint(0,2*size,(1,),device=x.device) # select the x coordinate of the top left corner
+        y_pos=torch.randint(0,2*size,(1,),device=x.device) # select the y coordinate of the top left corner
+        x_new[i]=x_pad[i,:,x_pos:(x_pos+W),y_pos:(y_pos+H)] # get the image
+    return x_new
 
 AUGMENT_FNS = {
-    'color': [augment_brightness, augment_saturation, augment_contrast],
-    'translation': [augment_translation],
-    'cutout': [augment_cutout],
+    'color': [random_jittering],
+    'translation': [random_translation],
+    'cutout': [random_cutout],
 }
 
