@@ -875,7 +875,7 @@ def progress(items, desc='', total=None, min_delay=0.1, displaytype='s1k'):
     for n, item in enumerate(items):
         t_now = time.time()
         if t_now - t_last > min_delay:
-            print("\r%s%d/%d (%6.2f%%)" % (
+            print("\n%s%d/%d (%6.2f%%)" % (
                 desc, n+1, total, n / float(total) * 100), end=" ")
             if n > 0:
 
@@ -899,7 +899,7 @@ def progress(items, desc='', total=None, min_delay=0.1, displaytype='s1k'):
             t_last = t_now
         yield item
     t_total = time.time() - t_start
-    print("\r%s%d/%d (100.00%%) (took %d:%02d)" % ((desc, total, total) +
+    print("\n%s%d/%d (100.00%%) (took %d:%02d)" % ((desc, total, total) +
                                                    divmod(t_total, 60)))
 
 

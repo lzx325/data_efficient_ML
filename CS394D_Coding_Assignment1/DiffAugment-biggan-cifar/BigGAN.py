@@ -433,6 +433,11 @@ class G_D(nn.Module):
         self.D = D
 
     def forward(self, z, gy, x=None, dy=None, train_G=False, return_G_z=False, policy=False, CR=False, CR_augment=None):
+        # lizx:
+        # z_.shape: (batch_size,dim_z)
+        # y_.shape: (batch_size,)
+        # x.shape: (batch_size, C, W, H)
+        # y.shape: (batch_size,)
         if z is not None:
             # If training G, enable grad tape
             with torch.set_grad_enabled(train_G):
@@ -445,12 +450,15 @@ class G_D(nn.Module):
                     G_z = G_z.half()
         else:
             G_z = None
-
+        # lizx: 
+        # G_z.shape: (batch_size, C, W, H)
+        # D_input: (2*batch_size, C, W, H)
+        # D_class: (2*batch_size, )
         D_input = torch.cat(
             [img for img in [G_z, x] if img is not None], 0)
         D_class = torch.cat(
             [label for label in [gy, dy] if label is not None], 0)
-        D_input = DiffAugment(D_input, policy=policy)
+        D_input = DiffAugment(D_input, policy=policy) # lizx: does not change shape
         if CR:
             if CR_augment:
                 x_CR_aug = torch.split(D_input, [G_z.shape[0], x.shape[0]])[1]

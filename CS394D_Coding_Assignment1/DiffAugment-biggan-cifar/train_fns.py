@@ -21,7 +21,14 @@ def dummy_training_function():
 
 
 def GAN_training_function(G, D, GD, z_, y_, ema, state_dict, config):
+    # lizx:
+    # z_.shape: (batch_size,dim_z)
+    # y_.shape: (batch_size,)
+
     def train(x, y):
+        # x.shape: (D_batch_size, C, W, H) D_batch_size=batch_size*num_D_steps*num_D_accumulations 
+        # num_D_accumulations=1 (usually)
+        # y.shape: (D_batch_size,)
         G.optim.zero_grad()
         D.optim.zero_grad()
         # How many chunks to split x and y into?
@@ -41,14 +48,13 @@ def GAN_training_function(G, D, GD, z_, y_, ema, state_dict, config):
                 z_.sample_()
                 y_.sample_()
                 D_scores = GD(z_[:config['batch_size']], y_[:config['batch_size']],
-                              x[counter], y[counter], train_G=False, policy=config['DiffAugment'],
+                              x[counter], y[counter], train_G=False, policy=config['DiffAugment'], # lizx: one training image is put into the network at a time
                               CR=config['CR'] > 0, CR_augment=config['CR_augment'])
 
                 D_loss_CR = 0
                 if config['CR'] > 0:
-
-                    # to do
-                    continue
+                    D_fake,D_real,D_real_aug=D_scores
+                    D_loss_CR=((D_real-D_real_aug)**2).mean()*config["CR"] # compute the square difference loss between real samples and augmented real samples
 
                 else:
                     D_fake, D_real = D_scores

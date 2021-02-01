@@ -11,3 +11,5 @@ __pycache__/
 *.pkl
 *.h5
 .nfs*
+/slurm/
+.gitignore
